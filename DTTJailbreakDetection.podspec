@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "DTTJailbreakDetection"
-  s.version          = "1.0"
+  s.version          = "0.0.1"
   s.summary          = "iOS device jailbreak detection library"
   s.homepage         = "https://github.com/stevejubs/DTTJailbreakDetection"
   s.license          = { :type => 'MIT', :file => 'LICENSE' }

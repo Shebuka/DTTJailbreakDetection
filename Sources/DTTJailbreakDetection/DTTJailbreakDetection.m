@@ -144,7 +144,7 @@
 
 - (BOOL)canViolateSandbox{
 	NSError *error;
-    BOOL grantsToWrite = NO;
+    BOOL jailBreak = NO;
 	NSString *string = @".";
 	[string writeToFile:@"/private/jailbreak.txt" atomically:YES
 						  encoding:NSUTF8StringEncoding error:&error];
