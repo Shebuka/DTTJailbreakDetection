@@ -163,9 +163,10 @@
 
 + (BOOL)isJailbroken {
 #if !(TARGET_IPHONE_SIMULATOR)
+    // Create an instance of DTTJailbreakDetection
+    DTTJailbreakDetection *instance = [[DTTJailbreakDetection alloc] init];
     
-    return [self checkPaths] || [self checkSchemes] || [self canViolateSandbox];
-    
+    return [instance checkPaths] || [instance checkSchemes] || [instance canViolateSandbox];
 #endif
     
     return NO;
