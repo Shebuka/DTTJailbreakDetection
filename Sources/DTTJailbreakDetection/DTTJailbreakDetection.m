@@ -24,76 +24,144 @@
 
 @implementation DTTJailbreakDetection
 
+
+- (NSArray *)pathsToCheck
+{
+    return @[
+            @"/.bootstrapped_electra",
+            @"/.cydia_no_stash",
+            @"/.installed_unc0ver",
+            @"/Applications/Cydia.app",
+            @"/Applications/FakeCarrier.app",
+            @"/Applications/Icy.app",
+            @"/Applications/IntelliScreen.app",
+            @"/Applications/MxTube.app",
+            @"/Applications/RockApp.app",
+            @"/Applications/SBSettings.app",
+            @"/Applications/Sileo.app",
+            @"/Applications/Snoop-itConfig.app",
+            @"/Applications/WinterBoard.app",
+            @"/Applications/blackra1n.app",
+            @"/Library/MobileSubstrate/CydiaSubstrate.dylib",
+            @"/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
+            @"/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
+            @"/Library/MobileSubstrate/MobileSubstrate.dylib",
+            @"/Library/PreferenceBundles/ABypassPrefs.bundle",
+            @"/Library/PreferenceBundles/FlyJBPrefs.bundle",
+            @"/Library/PreferenceBundles/LibertyPref.bundle",
+            @"/Library/PreferenceBundles/ShadowPreferences.bundle",
+            @"/System/Library/LaunchDaemons/com.ikey.bbot.plist",
+            @"/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist",
+            @"/bin/bash",
+            @"/bin/sh",
+            @"/etc/apt",
+            @"/etc/apt/sources.list.d/electra.list",
+            @"/etc/apt/sources.list.d/sileo.sources",
+            @"/etc/apt/undecimus/undecimus.list",
+            @"/etc/ssh/sshd_config",
+            @"/jb/amfid_payload.dylib",
+            @"/jb/jailbreakd.plist",
+            @"/jb/libjailbreak.dylib",
+            @"/jb/lzma",
+            @"/jb/offsets.plist",
+            @"/private/etc/apt",
+            @"/private/etc/dpkg/origins/debian",
+            @"/private/etc/ssh/sshd_config",
+            @"/private/var/Users/",
+            @"/private/var/cache/apt/",
+            @"/private/var/lib/apt",
+            @"/private/var/lib/cydia",
+            @"/private/var/log/syslog",
+            @"/private/var/mobile/Library/SBSettings/Themes",
+            @"/private/var/stash",
+            @"/private/var/tmp/cydia.log",
+	        @"/var/tmp/cydia.log",
+            @"/usr/bin/cycript",
+            @"/usr/bin/sshd",
+            @"/usr/lib/libcycript.dylib",
+            @"/usr/lib/libhooker.dylib",
+            @"/usr/lib/libjailbreak.dylib",
+            @"/usr/lib/libsubstitute.dylib",
+            @"/usr/lib/substrate",
+            @"/usr/lib/TweakInject",
+            @"/usr/libexec/cydia",
+            @"/usr/libexec/cydia/firmware.sh",
+            @"/usr/libexec/sftp-server",
+            @"/usr/libexec/ssh-keysign",
+            @"/usr/local/bin/cycript",
+            @"/usr/sbin/frida-server",
+            @"/usr/sbin/sshd",
+            @"/usr/share/jailbreak/injectme.plist",
+            @"/var/binpack",
+            @"/var/cache/apt",
+            @"/var/checkra1n.dmg",
+            @"/var/lib/apt",
+            @"/var/lib/cydia",
+            @"/var/lib/dpkg/info/mobilesubstrate.md5sums",
+            @"/var/log/apt"
+            ];
+}
+
+- (NSArray *)schemesToCheck
+{
+    return @[
+            @"activator://package/com.example.package",
+            @"cydia://package/com.example.package",
+            @"filza://package/com.example.package",
+            @"sileo://package/com.example.package",
+            @"undecimus://package/com.example.package",
+            @"zbra://package/com.example.package"
+            ];
+}
+
+- (BOOL)checkPaths
+{
+    BOOL jailBreak = NO;
+
+    for (NSString *path in [self pathsToCheck]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:path]){
+            jailBreak = YES;
+            break;
+        }
+    }
+
+    return jailBreak;
+}
+
+- (BOOL)checkSchemes
+{
+    BOOL jailBreak = NO;
+
+    for (NSString *scheme in [self schemesToCheck]) {
+        if([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:scheme]]){
+            jailBreak = YES;
+            break;
+        }
+    }
+
+    return jailBreak;
+}
+
+- (BOOL)canViolateSandbox{
+	NSError *error;
+    BOOL jailBreak = NO;
+	NSString *string = @".";
+	[string writeToFile:@"/private/jailbreak.txt" atomically:YES
+						  encoding:NSUTF8StringEncoding error:&error];
+	if(!error){
+		jailBreak = YES;
+	}
+
+    [[NSFileManager defaultManager] removeItemAtPath:@"/private/jailbreak.txt" error:nil];
+
+    return jailBreak;
+}
+
 + (BOOL)isJailbroken
 {
 #if !(TARGET_IPHONE_SIMULATOR)
 
-    if (@available(iOS 14.0, *)) {
-        if ([NSProcessInfo processInfo].isiOSAppOnMac)
-        {
-            return NO;
-        }
-    }
-    FILE *file = fopen("/Applications/Cydia.app", "r");
-    if (file) {
-        fclose(file);
-        return YES;
-    }
-    file = fopen("/Library/MobileSubstrate/MobileSubstrate.dylib", "r");
-    if (file) {
-        fclose(file);
-        return YES;
-    }
-    file = fopen("/bin/bash", "r");
-    if (file) {
-        fclose(file);
-        return YES;
-    }
-    file = fopen("/usr/sbin/sshd", "r");
-    if (file) {
-        fclose(file);
-        return YES;
-    }
-    file = fopen("/etc/apt", "r");
-    if (file) {
-        fclose(file);
-        return YES;
-    }
-    file = fopen("/usr/bin/ssh", "r");
-    if (file) {
-        fclose(file);
-        return YES;
-    }
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-
-    if ([fileManager fileExistsAtPath:@"/Applications/Cydia.app"]) {
-        return YES;
-    } else if ([fileManager fileExistsAtPath:@"/Library/MobileSubstrate/MobileSubstrate.dylib"]) {
-        return YES;
-    } else if ([fileManager fileExistsAtPath:@"/bin/bash"]) {
-        return YES;
-    } else if ([fileManager fileExistsAtPath:@"/usr/sbin/sshd"]) {
-        return YES;
-    } else if ([fileManager fileExistsAtPath:@"/etc/apt"]) {
-        return YES;
-    } else if ([fileManager fileExistsAtPath:@"/usr/bin/ssh"]) {
-        return YES;
-    }
-    
-    // Check if the app can access outside of its sandbox
-    NSError *error = nil;
-    NSString *string = @".";
-    [string writeToFile:@"/private/jailbreak.txt" atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    if (!error) {
-        [fileManager removeItemAtPath:@"/private/jailbreak.txt" error:nil];
-        return YES;
-    }
-    
-    // Check if the app can open a Cydia's URL scheme
-    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"cydia://package/com.example.package"]]) {
-        return YES;
-    }
+   return [self checkPaths] || [self checkSchemes] || [self canViolateSandbox];
 
 #endif
 
