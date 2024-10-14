@@ -4,7 +4,7 @@ DTTJailbreakDetection
 [![Version](https://img.shields.io/cocoapods/v/DTTJailbreakDetection.svg?style=flat)](http://cocoadocs.org/docsets/DTTJailbreakDetection)
 [![License](https://img.shields.io/cocoapods/l/DTTJailbreakDetection.svg?style=flat)](http://cocoadocs.org/docsets/DTTJailbreakDetection)
 [![Platform](https://img.shields.io/cocoapods/p/DTTJailbreakDetection.svg?style=flat)](http://cocoadocs.org/docsets/DTTJailbreakDetection)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-brightgreen.svg)](https://github.com/thii/DTTJailbreakDetection)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-brightgreen.svg)](https://github.com/shebuka/DTTJailbreakDetection)
 
 # TL;DR
 
@@ -20,10 +20,29 @@ A library to detect if an iOS device is jailbroken or not.
 
 # Installation
 
+## 1a. Setup with CocoaPods
 The easiest way to install DTTJailbreakDetection is to use CocoaPods. Just add the following line to your Podfile:
 
 ```ruby
 pod 'DTTJailbreakDetection'
+```
+
+## 1b. Add source
+Add `IOSSecuritySuite/*.swift` files to your project
+
+## 2. Update Info.plist
+After adding DTTJailbreakDetection to your project, you will also need to update your main Info.plist. There is a check in jailbreak detection routine that uses ```canOpenURL(_:)``` method and [requires](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) specifying URLs that will be queried.
+
+```xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>activator</string>
+    <string>cydia</string>
+    <string>filza</string>
+    <string>sileo</string>
+    <string>undecimus</string>
+    <string>zbra</string>
+</array>
 ```
 
 # Usage
@@ -36,21 +55,7 @@ To start using DTTJailbreakDetection:
 
 ## Example
 
-### iOS 7 or older
-
-```obj-c
-if ([DTTJailbreakDetection isJailbroken]) {
-    UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:@"System Requirements"
-                                                     message:@"This app is only supported on unmodified versions of iOS."
-                                                    delegate:self
-                                           cancelButtonTitle:@"OK"
-                                           otherButtonTitles:nil];
-    [alert show];
-    // End your app
-}
-```
-
-### iOS 8 or newer
+### iOS 9 or newer
 
 ```obj-c
 if ([DTTJailbreakDetection isJailbroken]) {
